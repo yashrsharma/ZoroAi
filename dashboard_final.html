@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoro AI | Premium Financial Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --indigo-primary: #6366f1;
+            --emerald-accent: #10b981;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 0% 0%, #0f172a 0%, #020617 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(30, 41, 59, 0.6);
+            transform: translateY(-6px);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #22d3ee);
+            border-radius: 10px;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+
+        .score-pulse {
+            animation: pulse-glow 2s infinite;
+        }
+    </style>
+</head>
+
+<body class="p-8 lg:p-12">
+
+<header class="flex justify-between items-center mb-16">
+    <div>
+        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+            ZORO AI
+        </h1>
+        <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mt-1">
+            Financial Intelligence Unit
+        </p>
+    </div>
+
+    <nav class="hidden md:flex gap-12 text-sm font-bold text-slate-400 uppercase tracking-widest">
+        <a href="#" class="nav-link active hover:text-white">Dashboard</a>
+        <a href="#" class="nav-link hover:text-white">Goals</a>
+        <span class="nav-link cursor-pointer hover:text-white">Insights</span>
+    </nav>
+
+    <div class="h-12 w-12 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center font-bold text-indigo-400">
+        JS
+    </div>
+</header>
+
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+    <div class="lg:col-span-7 space-y-10">
+
+        <div class="glass-panel p-12 flex flex-col items-center text-center">
+            <div class="flex items-center justify-between w-full mb-12">
+                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">
+                    Financial Health Index
+                </h3>
+                <span id="trainBadge" class="text-[10px] font-black uppercase tracking-widest text-emerald-400">DB: Connected</span>
+            </div>
+
+            <div class="relative p-2 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 score-pulse">
+                <div class="bg-slate-950 w-48 h-48 rounded-full flex flex-col items-center justify-center">
+                    <span id="healthScore" class="text-7xl font-black">--</span>
+                    <span id="healthLabel" class="text-xs text-emerald-400 font-black uppercase mt-2">ANALYZING</span>
+                </div>
+            </div>
+
+            <p id="insightText" class="mt-12 text-slate-400 italic text-sm max-w-sm">
+                Fetching latest data from finance run database...
+            </p>
+
+            <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <div class="p-5 bg-white/5 rounded-3xl border border-white/5 text-center">
+                    <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Debt Score</p>
+                    <p id="debtScore" class="text-2xl font-black mt-2">--</p>
+                </div>
+                <div class="p-5 bg-white/5 rounded-3xl border border-white/5 text-center">
+                    <p class="text-[10px] font-bold text-cyan-300 uppercase tracking-widest">Days to Clear</p>
+                    <p id="daysScore" class="text-2xl font-black mt-2">--</p>
+                </div>
+                <div class="p-5 bg-white/5 rounded-3xl border border-white/5 text-center">
+                    <p class="text-[10px] font-bold text-emerald-300 uppercase tracking-widest">Investment</p>
+                    <p id="invScore" class="text-2xl font-black mt-2">--</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-10">
+            <div class="flex justify-between mb-8">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500">
+                    Spending Breakdown
+                </h3>
+                <span id="dataMode" class="text-xs font-bold text-indigo-400">SQLite Live Sync</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div class="h-56">
+                    <canvas id="spendingRing"></canvas>
+                </div>
+
+                <div id="ringLegend" class="space-y-4">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-5">
+        <div class="glass-panel h-full flex flex-col">
+            <div class="p-8 border-b border-white/10 flex justify-between items-center">
+                <span class="text-xs font-black uppercase tracking-widest">
+                    Zoro AI Assistant
+                </span>
+                <button id="refreshBtn" class="text-xs font-black uppercase tracking-widest text-indigo-300 hover:text-white transition">
+                    Sync DB
+                </button>
+            </div>
+
+            <div class="flex-1 p-8 text-slate-400 space-y-4">
+                <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
+                    <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Live Snapshot</p>
+                    <div class="grid grid-cols-2 gap-6 text-sm">
+                        <div>
+                            <p class="text-slate-500 text-xs">Monthly Income</p>
+                            <p id="incomeVal" class="font-black text-lg">--</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-xs">Savings Rate</p>
+                            <p id="savingsRateVal" class="font-black text-lg">--</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-xs">Total Expenses</p>
+                            <p id="totalExpVal" class="font-black text-lg">--</p>
+                        </div>
+                        <div>
+                            <p class="text-slate-500 text-xs">Invested Amount</p>
+                            <p id="invVal" class="font-black text-lg">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-white/5 rounded-2xl border border-white/5 text-xs text-slate-400">
+                    <div class="font-black uppercase tracking-widest text-slate-500 mb-1">Database Log</div>
+                    <div id="debugBox" class="font-mono text-[10px] break-all text-indigo-300">Awaiting sync...</div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <input id="queryBox" type="text"
+                       placeholder="Ask about your financial status..."
+                       class="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 text-sm focus:outline-none focus:border-indigo-500 transition-all">
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // --- Chart Initialization ---
+    const ringCtx = document.getElementById('spendingRing').getContext('2d');
+    const ringChart = new Chart(ringCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#334155'],
+                cutout: '78%',
+                borderRadius: 18,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            maintainAspectRatio: false,
+            animation: { duration: 1200, easing: 'easeOutQuart' }
+        }
+    });
+
+    // --- Helpers ---
+    function fmtINR(num) {
+        return new Intl.NumberFormat('en-IN', { 
+            style: 'currency', 
+            currency: 'INR', 
+            maximumFractionDigits: 0 
+        }).format(num || 0);
+    }
+
+    function setText(id, val) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val;
+    }
+
+    // --- Core Logic ---
+    async function refreshMetrics() {
+        try {
+            setText("debugBox", "Querying finance_run.db...");
+            
+            // This endpoint should be served by your Python/Node backend
+            const response = await fetch("/api/latest", { cache: "no-store" });
+            
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            
+            const data = await response.json();
+            const out = data.output; // Assuming backend sends { "output": {...} }
+
+            // 1. Update Scores
+            const score = Math.round(out.Finance_Health_Score || 0);
+            setText("healthScore", score);
+            
+            const label = score >= 85 ? "Excellent" : score >= 70 ? "Good" : "Needs Work";
+            setText("healthLabel", label);
+            document.getElementById("healthLabel").className = `text-xs font-black uppercase mt-2 ${score >= 70 ? 'text-emerald-400' : 'text-orange-400'}`;
+
+            // 2. Update Stats
+            setText("debtScore", out.Predicted_Debt_Score || "N/A");
+            setText("daysScore", Math.round(out.Predicted_Days_To_Clear_Debt || 0));
+            setText("invScore", out.Predicted_Investment_Score || "N/A");
+
+            // 3. Update Snapshot
+            setText("incomeVal", fmtINR(out.Income));
+            setText("totalExpVal", fmtINR(out.Total_Expenses));
+            setText("invVal", fmtINR(out.Investment));
+            setText("savingsRateVal", `${Math.round((out.Savings_Rate || 0) * 100)}%`);
+
+            // 4. Update Chart & Legend
+            const grouped = out.Grouped_Spending || {};
+            const keys = Object.keys(grouped);
+            const values = Object.values(grouped);
+
+            ringChart.data.labels = keys;
+            ringChart.data.datasets[0].data = values;
+            ringChart.update();
+
+            const legend = document.getElementById("ringLegend");
+            legend.innerHTML = "";
+            keys.forEach((key, i) => {
+                const color = ringChart.data.datasets[0].backgroundColor[i];
+                legend.innerHTML += `
+                    <div class="p-4 bg-white/5 rounded-2xl flex justify-between items-center border border-white/5">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase" style="color:${color}">${key}</p>
+                            <p class="text-xl font-black">${fmtINR(grouped[key])}</p>
+                        </div>
+                        <div class="h-1.5 w-12 rounded-full" style="background:${color}"></div>
+                    </div>
+                `;
+            });
+
+            setText("insightText", `AI Analysis: Based on your last run, you are saving ${Math.round(out.Savings_Rate*100)}% of your income. Focus on reducing ${keys[0]} to improve your score.`);
+            setText("debugBox", `Success: Loaded record ID ${data.id || 'Latest'}`);
+
+        } catch (err) {
+            setText("debugBox", `Error: ${err.message}`);
+            setText("insightText", "Could not connect to the database server.");
+            setText("trainBadge", "DB: Disconnected");
+        }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", refreshMetrics);
+    
+    // Initial Load
+    window.onload = refreshMetrics;
+</script>
+
+</body>
+</html>

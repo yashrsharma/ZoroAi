@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZoroAppsAI – Login & Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const SUPABASE_URL = "https://ywefrfygdjfaewbpmejp.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_rVux9TUWDfGq6NqJ1XQ1Xg_Ps0bbM0n";
+
+    window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #020617;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #38bdf8;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .msg {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .switch {
+      margin-top: 15px;
+      text-align: center;
+      cursor: pointer;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card" id="signup-card">
+    <h2>Sign Up</h2>
+    <input id="signup-email" type="email" placeholder="Email" />
+    <input id="signup-password" type="password" placeholder="Password" />
+    <button onclick="signup()">Create Account</button>
+    <div class="msg" id="signup-msg"></div>
+    <div class="switch" onclick="toggle()">Already have an account? Login</div>
+  </div>
+
+  <div class="card" id="login-card" style="display:none">
+    <h2>Login</h2>
+    <input id="login-email" type="email" placeholder="Email" />
+    <input id="login-password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div class="msg" id="login-msg"></div>
+    <div class="switch" onclick="toggle()">New here? Sign Up</div>
+  </div>
+
+<script>
+  function toggle() {
+    document.getElementById("signup-card").style.display =
+      document.getElementById("signup-card").style.display === "none" ? "block" : "none";
+    document.getElementById("login-card").style.display =
+      document.getElementById("login-card").style.display === "none" ? "block" : "none";
+  }
+
+  async function signup() {
+    const email = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+
+    const { error } = await supabase.auth.signUp({ email, password });
+    document.getElementById("signup-msg").innerText =
+      error ? error.message : "Check your email for confirmation";
+  }
+
+  async function login() {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+  document.getElementById("login-msg").innerText = error.message;
+} else {
+  window.location.href = "/dashboard";
+}
+
+  }
+</script>
+</body>
+</html>

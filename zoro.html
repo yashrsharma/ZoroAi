@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZORO AI – Intelligent Finance Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #020617;
+      overflow-x: hidden;
+    }
+
+    .animate-gradient {
+      background-size: 200% auto;
+      animation: gradient 3s linear infinite;
+    }
+    @keyframes gradient {
+      to { background-position: 200% center; }
+    }
+
+    .glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    button:active { transform: scale(0.95); }
+
+    .card-hover {
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .card-hover:hover {
+      transform: translateY(-12px) scale(1.02);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.25);
+    }
+
+    .glow-bg {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(60px);
+    }
+
+    .float-dash-1 { animation: floatDash1 7s ease-in-out infinite; }
+    @keyframes floatDash1 {
+      0%,100% { transform: translateY(0px) rotate(-0.6deg); }
+      50% { transform: translateY(-22px) rotate(0.8deg); }
+    }
+
+    .float-dash-2 { animation: floatDash2 8s ease-in-out infinite; }
+    @keyframes floatDash2 {
+      0%,100% { transform: translateY(0px) rotate(1deg); }
+      50% { transform: translateY(-26px) rotate(-0.6deg); }
+    }
+
+    .dash-ui {
+      background: radial-gradient(circle at top, rgba(99,102,241,0.10), rgba(15,23,42,0.92));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 40px 90px rgba(0,0,0,0.6);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .analytics-shell {
+      background: radial-gradient(circle at top, rgba(34,211,238,0.08), rgba(15,23,42,0.92));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.65);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .analytics-float {
+      animation: analyticsFloat 7.5s ease-in-out infinite;
+    }
+    @keyframes analyticsFloat {
+      0%,100% { transform: translateY(0px) rotate(0.4deg); }
+      50% { transform: translateY(-20px) rotate(-0.6deg); }
+    }
+
+    /* ✅ WORKFLOW TIMELINE UI */
+    .step-card {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: all .4s ease;
+    }
+    .step-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      border-color: rgba(99,102,241,0.35);
+      box-shadow: 0 35px 80px rgba(79,70,229,0.25);
+    }
+
+    .step-icon {
+      box-shadow: 0 0 35px rgba(99,102,241,0.25);
+      transition: all .35s ease;
+    }
+
+    .step-card:hover .step-icon {
+      transform: scale(1.07);
+      box-shadow: 0 0 55px rgba(34,211,238,0.35);
+    }
+
+    .timeline-line {
+      height: 3px;
+      background: linear-gradient(90deg, rgba(99,102,241,0.95), rgba(34,211,238,0.8), rgba(16,185,129,0.9));
+      border-radius: 999px;
+      position: absolute;
+      top: 58px;
+      left: 0;
+      right: 0;
+      opacity: 0.85;
+    }
+
+    .line-glow {
+      position: absolute;
+      top: 58px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      filter: blur(10px);
+      background: linear-gradient(90deg, rgba(99,102,241,0.5), rgba(34,211,238,0.4), rgba(16,185,129,0.5));
+      opacity: 0.8;
+    }
+
+    .step-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(255,255,255,0.95);
+      color: #0f172a;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 selection:bg-indigo-500/30">
+
+<header class="fixed top-0 left-0 w-full glass z-50 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#" class="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent animate-gradient">
+      ZORO AI
+    </a>
+
+    <nav class="hidden md:flex gap-10 text-sm font-medium text-slate-400">
+      <a href="#features" class="hover:text-indigo-400 transition-all hover:-translate-y-0.5">Features</a>
+      <a href="#workflow" class="hover:text-indigo-400 transition-all hover:-translate-y-0.5">Workflow</a>
+      <a href="#dashboard" class="hover:text-indigo-400 transition-all hover:-translate-y-0.5">Dashboard</a>
+      <a href="#contact" class="hover:text-indigo-400 transition-all hover:-translate-y-0.5">Contact</a>
+    </nav>
+
+    <div class="flex items-center gap-6">
+      <button onclick="goNext()" class="hidden sm:block text-sm font-medium text-slate-400 hover:text-white transition-colors">Log In</button>
+      <button onclick="scrollToSection('features')" class="bg-indigo-600 px-6 py-2.5 rounded-full text-sm font-semibold text-white shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] hover:bg-indigo-500 transition-all active:scale-90">
+        Get Started
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="relative pt-44 pb-32 overflow-hidden">
+  <div class="glow-bg" id="cursor-glow"></div>
+
+  <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center relative z-10">
+
+    <div data-aos="fade-right" data-aos-duration="1000">
+      <span class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold tracking-wider uppercase mb-6 animate-pulse">
+        New: AI Risk Prediction 2.0
+      </span>
+
+      <h2 class="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight">
+        Master Your <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Wealth</span><br>
+        With Intelligence
+      </h2>
+
+      <p class="mt-8 text-slate-400 text-lg leading-relaxed max-w-lg">
+        Stop guessing. ZORO AI transforms your raw financial data into a roadmap for growth with real-time tracking and predictive modeling.
+      </p>
+
+      <div class="mt-10 flex flex-wrap gap-4">
+        <button onclick="alert('Demo launching...')" class="bg-white text-slate-950 px-8 py-4 rounded-xl font-bold hover:bg-indigo-50 hover:shadow-2xl transition-all active:scale-95">
+          Launch Demo
+        </button>
+
+        <button onclick="scrollToSection('workflow')" class="glass px-8 py-4 rounded-xl font-bold hover:bg-slate-800/50 transition-all border border-slate-700 active:scale-95">
+          How it Works
+        </button>
+      </div>
+    </div>
+
+    <div class="relative group" data-aos="zoom-in" data-aos-duration="1200">
+      <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+
+      <div class="relative bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-2xl overflow-hidden">
+        <div class="relative w-full h-[420px]">
+
+          <div class="dash-ui rounded-3xl p-6 w-full h-[320px] float-dash-1">
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h4 class="text-white font-bold tracking-wide text-lg">Zoro AI</h4>
+                <p class="text-xs text-slate-400 -mt-1">FINANCIAL INTELLIGENCE UNIT</p>
+              </div>
+              <div class="flex gap-6 text-xs text-slate-400 font-semibold uppercase">
+                <span class="text-indigo-300 border-b border-indigo-400 pb-1">Dashboard</span>
+                <span>Goals</span>
+                <span>Insights</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+              <div class="rounded-2xl dash-ui p-5">
+                <p class="text-xs text-slate-400 uppercase tracking-widest">Financial Health Index</p>
+                <div class="flex items-center gap-5 mt-5">
+                  <div class="w-28 h-28 rounded-full flex items-center justify-center relative"
+                    style="background: conic-gradient(#6366f1 0 60%, #22d3ee 60% 100%); -webkit-mask: radial-gradient(closest-side, transparent 68%, black 69%); mask: radial-gradient(closest-side, transparent 68%, black 69%);">
+                  </div>
+                  <div class="absolute ml-[23px] mt-[46px] text-center">
+                    <h2 class="text-3xl font-extrabold text-white">82</h2>
+                    <p class="text-[10px] text-emerald-400 font-bold tracking-wider">EXCELLENT</p>
+                  </div>
+                  <p class="text-xs text-slate-400 leading-relaxed max-w-[160px] ml-4">
+                    Your spending on non-essentials dropped by <span class="text-emerald-400 font-bold">12%</span> this week.
+                  </p>
+                </div>
+              </div>
+
+              <div class="rounded-2xl dash-ui p-5 flex flex-col justify-between">
+                <div>
+                  <p class="text-xs text-slate-400 uppercase tracking-widest">Zoro AI Assistant</p>
+                  <div class="mt-4 flex gap-3 items-start">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500 flex items-center justify-center font-extrabold text-white text-sm shadow-lg">AI</div>
+                    <div class="bg-slate-950/60 border border-slate-800 rounded-2xl px-4 py-3 text-xs text-slate-300 leading-relaxed">
+                      Hello! I’ve analyzed your recent transactions. Ready to optimize your goals today?
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-6 bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-500">
+                  Type your query...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-ui rounded-3xl p-6 w-[92%] h-[260px] absolute -bottom-6 left-6 float-dash-2 opacity-95">
+            <div class="flex justify-between items-center mb-4">
+              <h4 class="text-white font-bold tracking-wide">Goals</h4>
+              <span class="dash-pill text-indigo-200 text-xs px-3 py-1 rounded-full font-bold">What-if Simulator</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div class="rounded-2xl dash-ui p-4 col-span-1">
+                <p class="text-xs text-slate-400 uppercase tracking-widest">Savings Trajectory</p>
+                <div class="mt-4 w-full h-20 rounded-xl bg-slate-950/60 border border-slate-800 relative overflow-hidden">
+                  <div class="absolute inset-0 opacity-80">
+                    <div class="dash-line w-full h-[2px] absolute top-10 left-0"></div>
+                    <div class="dash-line w-[70%] h-[2px] absolute top-14 left-6 opacity-70"></div>
+                    <div class="dash-line w-[40%] h-[2px] absolute top-6 left-10 opacity-40"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl dash-ui p-4 col-span-1">
+                <p class="text-xs text-slate-400 uppercase tracking-widest">Goal Focus</p>
+                <h2 class="text-3xl font-extrabold text-white mt-3">₹40,000</h2>
+                <p class="text-xs text-slate-400 mt-2">Cumulative target</p>
+                <button class="mt-4 w-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-200 text-xs font-bold py-2 rounded-xl hover:bg-indigo-500/30 transition">
+                  Simulate market shocks
+                </button>
+              </div>
+
+              <div class="rounded-2xl dash-ui p-4 col-span-1">
+                <p class="text-xs text-slate-400 uppercase tracking-widest">Active Goals</p>
+                <div class="mt-3 bg-slate-950/60 border border-slate-800 rounded-xl p-3">
+                  <div class="flex justify-between text-xs text-slate-300 font-semibold">
+                    <span>Emergency Fund</span>
+                    <span class="text-indigo-300">₹40,000</span>
+                  </div>
+                  <div class="mt-3 h-2 rounded-full bg-slate-800 overflow-hidden">
+                    <div class="h-full w-2/3 bg-indigo-500 rounded-full"></div>
+                  </div>
+                </div>
+                <div class="mt-4 flex gap-3 items-center">
+                  <div class="w-10 h-10 rounded-full"
+                    style="background: conic-gradient(#10b981 0 45%, #6366f1 45% 100%); -webkit-mask: radial-gradient(closest-side, transparent 70%, black 71%); mask: radial-gradient(closest-side, transparent 70%, black 71%);">
+                  </div>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    “Cumulative risk analysis ready.”
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="features" class="py-32 bg-slate-950 relative z-10">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-20" data-aos="fade-up">
+      <h3 class="text-3xl md:text-4xl font-bold">Smart Tools for Modern Finance</h3>
+      <p class="text-slate-400 mt-4 text-lg">Powerful features to keep you ahead of the market and in control of your budget.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 card-hover" data-aos="fade-up" data-aos-delay="100">
+        <div class="w-12 h-12 bg-indigo-500/10 rounded-lg flex items-center justify-center mb-6 text-indigo-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        </div>
+        <h4 class="text-xl font-bold">Expense Tracking</h4>
+        <p class="mt-4 text-slate-400 leading-relaxed">Automatically track and categorize your daily expenses using OCR and bank sync.</p>
+      </div>
+
+      <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 card-hover" data-aos="fade-up" data-aos-delay="200">
+        <div class="w-12 h-12 bg-cyan-500/10 rounded-lg flex items-center justify-center mb-6 text-cyan-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h4 class="text-xl font-bold">AI Predictions</h4>
+        <p class="mt-4 text-slate-400 leading-relaxed">Predict future spending cycles and potential cash flow risks before they happen.</p>
+      </div>
+
+      <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-8 card-hover" data-aos="fade-up" data-aos-delay="300">
+        <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-6 text-purple-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+        </div>
+        <h4 class="text-xl font-bold">Smart Insights</h4>
+        <p class="mt-4 text-slate-400 leading-relaxed">Actionable recommendations on where to cut costs and how to optimize savings.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ WORKFLOW SECTION UPDATED LIKE IMAGE -->
+<section id="workflow" class="py-32 bg-slate-950 relative overflow-hidden">
+  <div class="glow-bg opacity-40 -top-40 left-10 absolute"></div>
+
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="text-center max-w-3xl mx-auto mb-20" data-aos="fade-up">
+      <h3 class="text-4xl md:text-5xl font-extrabold tracking-tight">
+        How <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Zoro AI</span> Works
+      </h3>
+      <p class="text-slate-400 mt-4 text-lg">
+        From connection to confidence in five simple steps
+      </p>
+    </div>
+
+    <div class="relative">
+      <div class="line-glow hidden md:block"></div>
+      <div class="timeline-line hidden md:block"></div>
+
+      <div class="grid md:grid-cols-5 gap-10">
+        <!-- Step 1 -->
+        <div class="step-card rounded-3xl p-7 text-center relative" data-aos="fade-up" data-aos-delay="100">
+          <div class="step-badge">1</div>
+          <div class="step-icon mx-auto w-20 h-20 rounded-3xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-200">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m2-4h-6m6 0l-2-2m2 2l-2 2"/>
+            </svg>
+          </div>
+          <h4 class="mt-7 text-lg font-bold text-white">Connect Bank</h4>
+          <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+            Secure, read-only connection to your accounts
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card rounded-3xl p-7 text-center relative" data-aos="fade-up" data-aos-delay="200">
+          <div class="step-badge">2</div>
+          <div class="step-icon mx-auto w-20 h-20 rounded-3xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-200">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 6h14a2 2 0 012 2v5H3V8a2 2 0 012-2z"/>
+            </svg>
+          </div>
+          <h4 class="mt-7 text-lg font-bold text-white">AI Analyzes</h4>
+          <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+            Patterns, habits, and opportunities detected
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card rounded-3xl p-7 text-center relative" data-aos="fade-up" data-aos-delay="300">
+          <div class="step-badge">3</div>
+          <div class="step-icon mx-auto w-20 h-20 rounded-3xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-200">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h4 class="mt-7 text-lg font-bold text-white">Goals Defined</h4>
+          <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+            Set what matters — laptop, travel, emergency fund
+          </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card rounded-3xl p-7 text-center relative" data-aos="fade-up" data-aos-delay="400">
+          <div class="step-badge">4</div>
+          <div class="step-icon mx-auto w-20 h-20 rounded-3xl bg-cyan-500/15 border border-cyan-500/25 flex items-center justify-center text-cyan-200">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </div>
+          <h4 class="mt-7 text-lg font-bold text-white">Smart Nudges</h4>
+          <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+            Real-time guidance to stay on track
+          </p>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-card rounded-3xl p-7 text-center relative" data-aos="fade-up" data-aos-delay="500">
+          <div class="step-badge">5</div>
+          <div class="step-icon mx-auto w-20 h-20 rounded-3xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-200">
+            <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </div>
+          <h4 class="mt-7 text-lg font-bold text-white">Financial Peace</h4>
+          <p class="mt-3 text-sm text-slate-400 leading-relaxed">
+            Less stress, more confidence with money
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ DASHBOARD SECTION -->
+<section id="dashboard" class="py-32 bg-slate-950">
+  <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
+
+    <div data-aos="fade-right">
+      <h3 class="text-4xl font-bold leading-tight">Control Center for<br>Your Money</h3>
+      <p class="mt-6 text-slate-400 text-lg leading-relaxed">
+        Visualize income, expenses, and long-term savings in a single, unified interface designed for clarity.
+      </p>
+
+      <ul class="mt-10 space-y-4">
+        <li class="flex items-center gap-3 text-slate-300">
+          <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293l-9 9-4-4 1.414-1.414L8.293 11.586l7.586-7.586 1.414 1.414z"></path></svg>
+          Real-time analytics & push alerts
+        </li>
+        <li class="flex items-center gap-3 text-slate-300">
+          <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293l-9 9-4-4 1.414-1.414L8.293 11.586l7.586-7.586 1.414 1.414z"></path></svg>
+          Interactive deep-dive charts
+        </li>
+        <li class="flex items-center gap-3 text-slate-300">
+          <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293l-9 9-4-4 1.414-1.414L8.293 11.586l7.586-7.586 1.414 1.414z"></path></svg>
+          Strategy-based recommendations
+        </li>
+      </ul>
+
+      <button onclick="scrollToSection('contact')" class="mt-12 text-indigo-400 font-bold flex items-center gap-2 hover:gap-4 transition-all group">
+        View all dashboard features 
+        <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+      </button>
+    </div>
+
+    <div class="relative analytics-shell rounded-3xl p-6 border border-slate-800 overflow-hidden analytics-float" data-aos="fade-left">
+
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-200 font-bold">
+            ⧉
+          </div>
+          <div>
+            <h4 class="text-white font-bold">Analytics View</h4>
+            <p class="text-xs text-slate-400">Strategy + Risk Interface Preview</p>
+          </div>
+        </div>
+        <span class="text-xs px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-200 font-bold">
+          Live Preview
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-5">
+        <div class="dash-ui rounded-2xl p-5">
+          <p class="text-xs text-slate-400 uppercase tracking-widest">Combat Operations</p>
+
+          <div class="mt-4 rounded-xl bg-rose-500/10 border border-rose-500/20 p-4">
+            <p class="text-[10px] text-rose-300 font-bold uppercase">Debt Killer (Avalanche)</p>
+            <p class="text-sm font-semibold text-slate-100 mt-2">Credit Card Interest: 42% p.a.</p>
+            <p class="text-xs text-slate-400 mt-1">AI suggests “Debt Snowball”.</p>
+            <button class="mt-3 w-full bg-rose-500/10 border border-rose-500/20 text-rose-200 text-xs font-bold py-2 rounded-xl hover:bg-rose-500/15 transition">
+              Execute Pay-Off
+            </button>
+          </div>
+
+          <div class="mt-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 p-4">
+            <p class="text-[10px] text-cyan-300 font-bold uppercase">Tax Shield (80C)</p>
+            <p class="text-sm font-semibold text-slate-100 mt-2">Gap detected in ELSS limit</p>
+            <p class="text-xs text-slate-400 mt-1">Invest ₹45,000 more to save tax.</p>
+            <button class="mt-3 w-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-200 text-xs font-bold py-2 rounded-xl hover:bg-cyan-500/15 transition">
+              Download Report
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-ui rounded-2xl p-5 flex flex-col justify-between">
+          <div>
+            <p class="text-xs text-slate-400 uppercase tracking-widest">Efficiency Benchmark</p>
+
+            <div class="mt-6 flex justify-center relative">
+              <div class="w-44 h-44 rounded-full"
+                   style="background: conic-gradient(#10b981 0 40%, #facc15 40% 70%, #6366f1 70% 100%); -webkit-mask: radial-gradient(closest-side, transparent 70%, black 71%); mask: radial-gradient(closest-side, transparent 70%, black 71%);">
+              </div>
+              <div class="absolute top-[70px] text-center">
+                <h2 class="text-4xl font-extrabold text-white">74</h2>
+                <p class="text-xs text-slate-400 -mt-1">Z-Score</p>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <div class="flex justify-between text-xs text-slate-400 font-semibold">
+                <span>Passive Income</span>
+                <span>₹12K/MO</span>
+              </div>
+              <div class="mt-2 h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div class="h-full w-1/3 bg-emerald-500 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="mt-6 w-full bg-indigo-500 hover:bg-indigo-400 transition-all text-white font-bold py-3 rounded-2xl shadow-[0_0_25px_rgba(99,102,241,0.35)]">
+            Optimize My Life
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer id="contact" class="bg-slate-900/50 border-t border-slate-800 py-20">
+  <div class="max-w-7xl mx-auto px-6 text-center">
+    <h4 class="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-4">ZORO AI</h4>
+    <p class="text-slate-500 mt-4 max-w-md mx-auto">
+      The future of personal and business finance management. Empowered by data, driven by AI.
+    </p>
+
+    <div class="mt-10 flex justify-center gap-8">
+      <a href="#" class="text-slate-400 hover:text-white transition-all hover:scale-125">Twitter</a>
+      <a href="#" class="text-slate-400 hover:text-white transition-all hover:scale-125">LinkedIn</a>
+      <a href="#" class="text-slate-400 hover:text-white transition-all hover:scale-125">GitHub</a>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-600 text-sm">
+      <p>© 2026 ZORO AI. All rights reserved.</p>
+      <div class="flex gap-8">
+        <a href="#" class="hover:text-slate-400">Privacy Policy</a>
+        <a href="#" class="hover:text-slate-400">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function goNext() {
+  window.location.href = "/login";
+}
+</script>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 800, once: true });
+
+  const glow = document.getElementById('cursor-glow');
+  document.addEventListener('mousemove', (e) => {
+    glow.style.left = e.clientX - 300 + 'px';
+    glow.style.top = e.clientY - 300 + 'px';
+  });
+
+  function scrollToSection(id) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('mousedown', () => {
+      console.log('Button clicked: ' + button.innerText);
+    });
+  });
+</script>
+
+</body>
+</html>

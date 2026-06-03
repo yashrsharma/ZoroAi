@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoro AI | Goals + Supabase</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --indigo-primary: #6366f1;
+      --emerald-accent: #10b981;
+      --cyan-accent: #22d3ee;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 0% 0%, #0f172a 0%, #020617 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2.5rem;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .glass-panel:hover {
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      background: rgba(30, 41, 59, 0.6);
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .glow-orb {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      filter: blur(60px);
+      animation: float 20s infinite alternate;
+    }
+    @keyframes float { from { transform: translate(0, 0); } to { transform: translate(100px, 50px); } }
+    .nav-link { position: relative; transition: color 0.3s; }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #6366f1, #22d3ee);
+      border-radius: 10px;
+    }
+    .chat-scroll::-webkit-scrollbar { width: 4px; }
+    .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    .animate-in { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .goal-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 1rem;
+      border-radius: 1.25rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .goal-input:focus { border-color: var(--indigo-primary); }
+  </style>
+</head>
+
+<body class="p-8 lg:p-12">
+  <div class="glow-orb" style="top:-100px; right:-100px;"></div>
+  <div class="glow-orb" style="bottom:-100px; left:-100px; animation-delay:-5s;"></div>
+
+  <!-- HEADER -->
+  <header class="flex justify-between items-center mb-10 animate-in">
+    <div>
+      <h1 class="text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+        ZORO AI
+      </h1>
+      <p class="text-slate-500 font-semibold tracking-wide text-xs uppercase mt-1">Financial Intelligence Unit</p>
+    </div>
+
+    <nav class="hidden md:flex gap-12 text-sm font-bold text-slate-400 uppercase tracking-widest">
+      <span id="nav-dash" onclick="showPage('dashboard')" class="nav-link active cursor-pointer hover:text-white">Dashboard</span>
+      <span id="nav-goals" onclick="showPage('goals')" class="nav-link cursor-pointer hover:text-white">Goals</span>
+      <span class="nav-link cursor-pointer hover:text-white">Insights</span>
+    </nav>
+
+    <div class="h-12 w-12 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center font-bold text-indigo-400 shadow-xl">
+      JS
+    </div>
+  </header>
+
+  <!-- AUTH BAR (for Option A / RLS) -->
+  <section class="mb-10 animate-in">
+    <div class="glass-panel p-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+      <div>
+        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Supabase Auth</p>
+        <p id="auth-status" class="text-sm text-slate-200 mt-1">Checking session...</p>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-3 md:items-center">
+        <input id="email" class="goal-input md:w-[320px]" placeholder="Email for OTP login" />
+        <button id="btn-login" class="bg-white text-slate-900 font-bold py-3 px-6 rounded-2xl">Send OTP</button>
+        <button id="btn-logout" class="border border-white/20 font-bold py-3 px-6 rounded-2xl hidden">Logout</button>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500 mt-3">
+      If you don’t want login, use the “No auth” SQL option and remove the auth section + user_id usage in JS.
+    </p>
+  </section>
+
+  <!-- DASHBOARD PAGE (EMPTY PLACEHOLDER) -->
+  <main id="dashboard-page" class="animate-in">
+    <!-- EMPTY: You will add your dashboard code here -->
+  </main>
+
+  <!-- GOALS PAGE -->
+  <main id="goals-page" class="hidden animate-in">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+
+      <!-- LEFT COLUMN -->
+      <div class="space-y-6">
+        <div class="glass-panel p-6 border-indigo-500/20">
+          <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Savings Trajectory</span>
+          <div class="h-44 mt-4"><canvas id="goalLineChart"></canvas></div>
+        </div>
+
+        <div class="glass-panel p-8 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg">Active Goals</h3>
+            <button id="btn-refresh" class="text-xs font-black uppercase tracking-widest text-indigo-300 hover:text-white">
+              Refresh
+            </button>
+          </div>
+
+          <div id="goals-list" class="space-y-4 max-h-[300px] overflow-y-auto chat-scroll pr-2">
+            <!-- Filled from DB -->
+          </div>
+
+          <p id="goals-empty" class="text-sm text-slate-400 hidden">No goals yet. Add your first goal.</p>
+        </div>
+      </div>
+
+      <!-- CREATE GOAL -->
+      <div class="glass-panel p-8 flex flex-col h-full min-h-[600px]">
+        <h3 class="text-lg font-bold mb-8">Create New Goal</h3>
+
+        <div class="space-y-4 flex-1">
+          <input type="text" id="goal-name" placeholder="Goal Name" class="goal-input">
+          <input type="number" id="goal-amount" placeholder="Target (₹)" class="goal-input">
+          <input type="date" id="goal-date" class="goal-input text-slate-500">
+
+          <div class="grid grid-cols-2 gap-4 pt-4">
+            <button id="btn-save-goal" class="bg-white text-slate-900 font-bold py-4 rounded-2xl hover:bg-indigo-50 transition">
+              Save
+            </button>
+            <button class="border border-white/20 font-bold py-4 rounded-2xl">Pay Debt</button>
+          </div>
+        </div>
+
+        <button id="btn-generate" class="mt-8 bg-slate-950 border border-white/10 text-white font-bold py-5 rounded-full">
+          Generate Goal Plan
+        </button>
+      </div>
+
+      <!-- GOAL FOCUS -->
+      <div class="glass-panel p-8 space-y-8 flex flex-col justify-between h-full">
+        <div>
+          <h3 class="font-bold text-lg">Goal Focus</h3>
+          <div class="text-center py-10">
+            <h2 class="text-5xl font-black tracking-tighter" id="detail-amount">₹0</h2>
+            <p class="text-[10px] text-slate-500 font-bold uppercase mt-2">Cumulative Target</p>
+          </div>
+
+          <div class="mt-4 p-5 bg-white/5 border border-white/5 rounded-[2rem] text-center">
+            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">AI Stress Test</p>
+
+            <div id="stress-score-ui" class="hidden animate-in">
+              <div class="text-3xl font-black text-emerald-400 mb-1" id="probability-val">--%</div>
+              <p class="text-[10px] font-bold text-slate-400 uppercase">Success Probability</p>
+            </div>
+
+            <button onclick="runStressTest()" id="stress-btn"
+              class="w-full mt-2 py-3 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-black uppercase rounded-xl">
+              Simulate Market Shocks
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 border border-indigo-500/30 bg-indigo-500/5 rounded-3xl">
+          <p class="text-xs text-slate-300 italic" id="ai-insight">"Cumulative risk analysis ready."</p>
+        </div>
+      </div>
+
+      <!-- WHAT-IF SIMULATOR -->
+      <div class="glass-panel p-8 space-y-6 flex flex-col border-emerald-500/20">
+        <h3 class="font-bold text-lg">What-If Simulator</h3>
+
+        <div class="space-y-4">
+          <input type="text" id="sim-item" placeholder="What if I buy..." class="goal-input">
+          <input type="number" id="sim-cost" placeholder="Cost: ₹" class="goal-input">
+          <button onclick="simulateImpact()" class="w-full bg-white text-slate-900 font-bold py-4 rounded-2xl">Simulate</button>
+        </div>
+
+        <div id="impact-analysis" class="hidden animate-in pt-4">
+          <div class="p-6 bg-white/5 border border-white/10 rounded-3xl">
+            <p class="text-sm mb-4" id="sim-result"></p>
+            <div class="bg-indigo-500/10 p-4 rounded-2xl border border-indigo-500/20 text-xs">
+              <p class="font-bold text-indigo-400 uppercase">AI Suggestion</p>
+              <p id="sim-suggestion"></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Supabase + App Logic -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    // ✅ PUT YOUR SUPABASE PROJECT KEYS HERE
+    const SUPABASE_URL = "https://ywefrfygdjfaewbpmejp.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_rVux9TUWDfGq6NqJ1XQ1Xg_Ps0bbM0n";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ---------- NAV ----------
+    window.showPage = function(pageId) {
+      const dash = document.getElementById('dashboard-page');
+      const goals = document.getElementById('goals-page');
+
+      dash.classList.toggle('hidden', pageId !== 'dashboard');
+      goals.classList.toggle('hidden', pageId !== 'goals');
+
+      document.getElementById('nav-dash')?.classList.toggle('active', pageId === 'dashboard');
+      document.getElementById('nav-goals')?.classList.toggle('active', pageId === 'goals');
+
+      if (pageId === 'goals') loadGoals(); // refresh when entering Goals
+    };
+
+    // ---------- CHART ----------
+    let goalLineChart = null;
+    function initGoalsChart() {
+      const canvas = document.getElementById('goalLineChart');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      goalLineChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [{
+          data: [],
+          borderColor: '#6366f1',
+          borderWidth: 4,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+          backgroundColor: 'rgba(99, 102, 241, 0.1)'
+        }]},
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    }
+
+    // ---------- AUTH (Option A) ----------
+    const authStatus = document.getElementById("auth-status");
+    const btnLogin = document.getElementById("btn-login");
+    const btnLogout = document.getElementById("btn-logout");
+    const emailInput = document.getElementById("email");
+
+    async function refreshAuthUI() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        authStatus.textContent = `Logged in as ${session.user.email}`;
+        btnLogout.classList.remove("hidden");
+      } else {
+        authStatus.textContent = "Not logged in (required if you enabled RLS policies).";
+        btnLogout.classList.add("hidden");
+      }
+    }
+
+    btnLogin.addEventListener("click", async () => {
+      const email = (emailInput.value || "").trim();
+      if (!email) return alert("Enter email first.");
+
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) return alert(error.message);
+
+      alert("OTP link sent to your email. Open it to sign in, then return here.");
+    });
+
+    btnLogout.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      await refreshAuthUI();
+      await loadGoals();
+    });
+
+    supabase.auth.onAuthStateChange(async () => {
+      await refreshAuthUI();
+      await loadGoals();
+    });
+
+    // ---------- DB: LOAD GOALS ----------
+    const goalsList = document.getElementById("goals-list");
+    const goalsEmpty = document.getElementById("goals-empty");
+    const detailAmount = document.getElementById("detail-amount");
+
+    let totalTarget = 0;
+
+    function renderGoals(goals) {
+      goalsList.innerHTML = "";
+      totalTarget = 0;
+
+      if (!goals || goals.length === 0) {
+        goalsEmpty.classList.remove("hidden");
+        detailAmount.textContent = "₹0";
+        if (goalLineChart) {
+          goalLineChart.data.labels = [];
+          goalLineChart.data.datasets[0].data = [];
+          goalLineChart.update();
+        }
+        return;
+      }
+
+      goalsEmpty.classList.add("hidden");
+
+      const labels = [];
+      const series = [];
+
+      for (const g of goals) {
+        totalTarget += Number(g.target_amount);
+
+        labels.push(g.name);
+        series.push(Number(g.target_amount));
+
+        goalsList.insertAdjacentHTML("beforeend", `
+          <div class="p-5 bg-white/5 border border-white/5 rounded-2xl">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-semibold">${escapeHtml(g.name)}</span>
+              <span class="text-sm font-bold text-indigo-400">₹${Number(g.target_amount).toLocaleString()}</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-indigo-500 h-full w-[10%]"></div>
+            </div>
+            ${g.target_date ? `<p class="text-xs text-slate-400 mt-3">Target date: ${g.target_date}</p>` : ``}
+          </div>
+        `);
+      }
+
+      detailAmount.textContent = `₹${totalTarget.toLocaleString()}`;
+
+      if (goalLineChart) {
+        goalLineChart.data.labels = labels;
+        goalLineChart.data.datasets[0].data = series;
+        goalLineChart.update();
+      }
+    }
+
+    async function loadGoals() {
+      // With Option A (RLS), user must be logged in
+      // If you used Option B (no auth), you can just select without user_id.
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // If RLS is ON and user isn't logged in, show empty
+      // (otherwise select will fail)
+      if (!session?.user) {
+        renderGoals([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("goals")
+        .select("id, name, target_amount, target_date, created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        renderGoals([]);
+        return;
+      }
+
+      renderGoals(data);
+    }
+
+    // ---------- DB: ADD GOAL ----------
+    const btnSaveGoal = document.getElementById("btn-save-goal");
+    btnSaveGoal.addEventListener("click", addGoal);
+
+    async function addGoal() {
+      const name = (document.getElementById("goal-name").value || "").trim();
+      const amount = Number(document.getElementById("goal-amount").value || 0);
+      const dateVal = document.getElementById("goal-date").value || null;
+
+      if (!name) return alert("Enter goal name");
+      if (!Number.isFinite(amount) || amount <= 0) return alert("Enter valid target amount");
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return alert("Please login first (RLS enabled).");
+
+      const payload = {
+        user_id: session.user.id,
+        name,
+        target_amount: amount,
+        target_date: dateVal || null
+      };
+
+      const { error } = await supabase.from("goals").insert(payload);
+      if (error) return alert(error.message);
+
+      document.getElementById("goal-name").value = "";
+      document.getElementById("goal-amount").value = "";
+      document.getElementById("goal-date").value = "";
+
+      await loadGoals();
+    }
+
+    // ---------- WHAT-IF + STRESS TEST ----------
+    window.simulateImpact = function() {
+      const cost = Number(document.getElementById('sim-cost').value || 0);
+      if (!Number.isFinite(cost) || cost <= 0) return;
+
+      const delay = Math.ceil(cost / 15000);
+      document.getElementById('impact-analysis').classList.remove('hidden');
+      document.getElementById('sim-result').innerHTML =
+        `Delayed by <span class="text-indigo-400 font-bold">${delay} months</span>.`;
+      document.getElementById('sim-suggestion').innerText =
+        `Increase monthly savings by ₹${Math.floor(cost/12)} to stay on track.`;
+    };
+
+    window.runStressTest = function() {
+      const btn = document.getElementById('stress-btn');
+      const scoreUI = document.getElementById('stress-score-ui');
+      const probVal = document.getElementById('probability-val');
+      const insight = document.getElementById('ai-insight');
+
+      btn.innerText = "Simulating Scenarios...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const risk = (totalTarget / 150000) * 15;
+        const score = Math.max(10, Math.floor(92 - risk - (Math.random() * 10)));
+
+        scoreUI.classList.remove('hidden');
+        probVal.innerText = `${score}%`;
+
+        if (score > 75) {
+          probVal.className = "text-3xl font-black text-emerald-400 mb-1";
+          insight.innerText = `"High reliability: You are likely to survive a 10% income drop."`;
+        } else {
+          probVal.className = "text-3xl font-black text-red-500 mb-1";
+          insight.innerText = `"Warning: Low capital buffer detected. Consider a 3-month safety fund."`;
+        }
+
+        btn.innerText = "Re-Run Test";
+        btn.disabled = false;
+      }, 1200);
+    };
+
+    // ---------- UTIL ----------
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      }[m]));
+    }
+
+    // ---------- START ----------
+    document.getElementById("btn-refresh").addEventListener("click", loadGoals);
+
+    initGoalsChart();
+    await refreshAuthUI();
+    await loadGoals();
+  </script>
+</body>
+</html>

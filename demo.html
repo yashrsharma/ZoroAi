@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoro AI | Your Financial Co-Pilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc;
+            line-height: 1.6;
+        }
+        .glass-card { 
+            background: rgba(15, 23, 42, 0.4); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .input-field {
+            background: rgba(2, 6, 23, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            width: 100%;
+            color: white;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        .nav-link { cursor: pointer; transition: all 0.3s; }
+        .nav-link.active { color: white; border-bottom: 2px solid #6366f1; padding-bottom: 4px; }
+        .hidden { display: none; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen p-6 md:p-12 lg:px-20 xl:px-32">
+
+    <header class="flex justify-between items-center mb-16">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                ZORO AI
+            </h1>
+            <p class="text-slate-500 font-medium mt-1">Your Financial Co-Pilot</p>
+        </div>
+        <div class="flex items-center gap-10">
+            <nav class="hidden lg:flex gap-10 text-sm font-bold tracking-wide text-slate-400">
+                <span id="nav-dash" onclick="showPage('dashboard')" class="nav-link active">Dashboard</span>
+                <span id="nav-goals" onclick="showPage('goals')" class="nav-link">Goals</span>
+                <span class="nav-link hover:text-white">Analysis</span>
+                <span class="nav-link hover:text-white">Settings</span>
+            </nav>
+            <div class="flex gap-5 items-center">
+                <button class="relative p-3 glass-card !rounded-xl text-slate-400 hover:text-white">
+                    <span class="absolute top-3 right-3 w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </button>
+                <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center font-bold text-indigo-400 shadow-lg">U</div>
+            </div>
+        </div>
+    </header>
+
+    <main id="dashboard-page" class="animate-fade-in">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4 space-y-10">
+                <div class="glass-card p-10 text-center border-indigo-500/20">
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-10">Financial Health</h3>
+                    <div class="relative inline-flex items-center justify-center p-1.5 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-emerald-400">
+                        <div class="bg-slate-950 rounded-full w-36 h-36 flex flex-col items-center justify-center">
+                            <span class="text-6xl font-black text-white">82</span>
+                            <span class="text-[11px] text-emerald-400 font-black uppercase tracking-widest mt-1">Excellent</span>
+                        </div>
+                    </div>
+                    <p class="mt-10 text-sm text-slate-400 italic">"AI Analysis: Your score is high because you paid off your credit card fully."</p>
+                </div>
+
+                <div class="glass-card p-8">
+                    <div class="h-64 relative"><canvas id="spendingChart"></canvas></div>
+                    <div class="grid grid-cols-2 gap-4 mt-10">
+                        <div class="p-5 bg-slate-900/40 rounded-3xl border border-white/5 text-center">
+                            <p class="text-[10px] font-bold text-indigo-400 uppercase">Rent</p>
+                            <p class="text-2xl font-black">40%</p>
+                        </div>
+                        <div class="p-5 bg-slate-900/40 rounded-3xl border border-white/5 text-center">
+                            <p class="text-[10px] font-bold text-emerald-400 uppercase">Food</p>
+                            <p class="text-2xl font-black">30%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 space-y-10">
+                <div class="glass-card p-8 cursor-pointer hover:scale-[1.02]" onclick="showPage('goals')">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h3 class="text-2xl font-black tracking-tight">Europe Trip</h3>
+                            <p class="text-sm text-slate-500 mt-1 font-medium">Target: ₹1,50,000</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-indigo-400 font-black text-3xl">30%</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-900/80 rounded-full h-3 mb-8 overflow-hidden">
+                        <div class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full rounded-full" style="width: 30%"></div>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Click to manage goals →</p>
+                </div>
+
+                <div class="glass-card p-10 bg-gradient-to-br from-slate-900/60 to-indigo-950/30">
+                    <h3 class="text-xl font-bold mb-8">What-If Simulator</h3>
+                    <div class="space-y-6">
+                        <input type="text" placeholder="Planned Purchase" class="input-field">
+                        <input type="number" placeholder="Cost (₹)" class="input-field">
+                        <button class="w-full py-5 bg-white text-slate-950 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 shadow-xl shadow-indigo-500/10">Analyze Impact</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3">
+                <div class="glass-card flex flex-col h-[600px]">
+                    <div class="p-7 border-b border-white/5"><span class="font-black text-xs uppercase tracking-widest">Zoro AI Assistant</span></div>
+                    <div class="flex-1 p-7 overflow-y-auto space-y-6 no-scrollbar">
+                        <div class="bg-slate-800/80 rounded-2xl p-4 text-xs max-w-[90%]">Hello! Ready to optimize your goals today?</div>
+                    </div>
+                    <div class="p-7">
+                        <input type="text" placeholder="Ask anything..." class="w-full bg-slate-950 border border-white/10 rounded-2xl p-4 text-xs">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="goals-page" class="hidden animate-fade-in">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4 space-y-10">
+                <div class="glass-card p-10 border-indigo-500/20 bg-indigo-500/5">
+                    <h3 class="text-2xl font-black mb-8">Create New Goal</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">Goal Name</label>
+                            <input type="text" placeholder="e.g. New Laptop" class="input-field">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">Target Amount (₹)</label>
+                            <input type="number" placeholder="70,000" class="input-field">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">Target Date</label>
+                            <input type="date" class="input-field text-slate-400">
+                        </div>
+                        <div class="flex gap-4">
+                            <button class="flex-1 py-4 bg-indigo-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/20">Save Goal</button>
+                            <button class="px-6 py-4 bg-slate-800 rounded-2xl font-black text-xs uppercase hover:bg-slate-700 transition">Pay Debt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-10">
+                <div class="glass-card p-10">
+                    <div class="flex justify-between items-center mb-10">
+                        <h3 class="text-2xl font-black">Active Goals</h3>
+                        <span class="text-xs font-bold text-slate-500">2 Goals in Progress</span>
+                    </div>
+                    
+                    <div class="space-y-10">
+                        <div class="p-8 bg-slate-900/50 rounded-[2.5rem] border border-white/5">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h4 class="text-xl font-bold">Europe Trip</h4>
+                                    <p class="text-sm text-slate-500">Target: ₹1,50,000</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-black text-indigo-400">30%</p>
+                                    <p class="text-[10px] font-black text-slate-500 uppercase">Progress</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-3 mb-8"><div class="bg-indigo-500 h-full rounded-full w-[30%] shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div></div>
+                            <div class="flex items-center gap-4 p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
+                                <span class="text-xl">📈</span>
+                                <p class="text-xs font-medium text-indigo-100">Increase monthly contribution by ₹2,000 to reach target on time.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-8 bg-slate-900/50 rounded-[2.5rem] border border-white/5 opacity-60">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h4 class="text-xl font-bold">Emergency Fund</h4>
+                                    <p class="text-sm text-slate-500">Target: ₹50,000</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-3xl font-black text-emerald-400">85%</p>
+                                    <p class="text-[10px] font-black text-slate-500 uppercase">Progress</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-3 mb-8"><div class="bg-emerald-500 h-full rounded-full w-[85%] shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div></div>
+                            <div class="flex items-center gap-4 p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                                <span class="text-xl">✅</span>
+                                <p class="text-xs font-medium text-emerald-100">Almost there! Stick to the plan for 1 more month.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // NAVIGATION LOGIC
+        function showPage(pageId) {
+            document.getElementById('dashboard-page').classList.add('hidden');
+            document.getElementById('goals-page').classList.add('hidden');
+            document.getElementById('nav-dash').classList.remove('active');
+            document.getElementById('nav-goals').classList.remove('active');
+
+            if(pageId === 'dashboard') {
+                document.getElementById('dashboard-page').classList.remove('hidden');
+                document.getElementById('nav-dash').classList.add('active');
+            } else {
+                document.getElementById('goals-page').classList.remove('hidden');
+                document.getElementById('nav-goals').classList.add('active');
+            }
+        }
+
+        // CHART DATA
+        const ctx = document.getElementById('spendingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Rent', 'Food', 'Others'],
+                datasets: [{
+                    data: [40, 30, 30],
+                    backgroundColor: ['#6366f1', '#10b981', '#334155'],
+                    borderWidth: 0,
+                    cutout: '80%',
+                    borderRadius: 20
+                }]
+            },
+            options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
+        });
+    </script>
+</body>
+</html>

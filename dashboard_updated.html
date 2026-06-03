@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoro AI | Premium Financial Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root { --indigo-primary:#6366f1; --emerald-accent:#10b981; }
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:radial-gradient(circle at 0% 0%, #0f172a 0%, #020617 100%);
+      color:#f8fafc; min-height:100vh;
+    }
+    .glass-panel{
+      background:rgba(30,41,59,.4);
+      backdrop-filter:blur(20px);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:2.5rem;
+      transition:all .5s ease;
+    }
+    .glass-panel:hover{
+      border-color:rgba(99,102,241,.4);
+      background:rgba(30,41,59,.6);
+      transform:translateY(-6px);
+    }
+    .nav-link{ position:relative; transition:color .3s; }
+    .nav-link.active::after{
+      content:''; position:absolute; bottom:-10px; left:0; width:100%; height:3px;
+      background:linear-gradient(90deg,#6366f1,#22d3ee); border-radius:10px;
+    }
+  </style>
+</head>
+
+<body class="p-8 lg:p-12">
+
+<header class="flex justify-between items-center mb-16">
+  <div>
+    <h1 class="text-4xl font-extrabold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">ZORO AI</h1>
+    <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mt-1">Financial Intelligence Unit</p>
+  </div>
+
+
+
+
+<nav class="hidden md:flex gap-12 text-sm font-bold text-slate-400 uppercase tracking-widest">
+  <a href="/dashboard" class="nav-link active hover:text-white">Dashboard</a>
+  <a href="/goals" class="nav-link hover:text-white">Goals</a>
+  <a href="/chats" class="nav-link cursor-pointer hover:text-white">AI Support</a>
+</nav>
+
+
+  <div class="h-12 w-12 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center font-bold text-indigo-400">JS</div>
+</header>
+
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+  <!-- LEFT PANEL -->
+  <div class="lg:col-span-7 space-y-10">
+
+    <!-- FINANCIAL HEALTH -->
+    <div class="glass-panel p-12 flex flex-col items-center text-center">
+      <div class="flex items-center justify-between w-full mb-12">
+        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Financial Health Index</h3>
+        <span id="trainBadge" class="text-[10px] font-black uppercase tracking-widest text-slate-400">DB: loading…</span>
+      </div>
+
+      <div class="relative p-2 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400">
+        <div class="bg-slate-950 w-48 h-48 rounded-full flex flex-col items-center justify-center">
+          <span id="healthScore" class="text-7xl font-black">--</span>
+          <span id="healthLabel" class="text-xs text-emerald-400 font-black uppercase mt-2">--</span>
+        </div>
+      </div>
+
+      <p id="insightText" class="mt-12 text-slate-400 italic text-sm max-w-sm">
+        Loading from finance_runs.db…
+      </p>
+
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+        <div class="p-5 bg-white/5 rounded-3xl border border-white/5 text-center">
+          <p class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Debt Score</p>
+          <p id="debtScore" class="text-2xl font-black mt-2">--</p>
+        </div>
+        <div class="p-5 bg-white/5 rounded-3xl border border-white/5 text-center">
+          <p class="text-[10px] font-bold text-cyan-300 uppercase tracking-widest">Days to Clear Debt</p>
+          <p id="daysScore" class="text-2xl font-black mt-2">--</p>
+        </div>
+        <div class="p-5 bg-white/5 rounded-3xl border border-white/5 text-center">
+          <p class="text-[10px] font-bold text-emerald-300 uppercase tracking-widest">Investment Score</p>
+          <p id="invScore" class="text-2xl font-black mt-2">--</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RING GRAPH -->
+    <div class="glass-panel p-10">
+      <div class="flex justify-between mb-8">
+        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500">Spending Breakdown (Ring Graph)</h3>
+        <span id="dataMode" class="text-xs font-bold text-indigo-400">From finance_runs.db</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div class="h-56"><canvas id="spendingRing"></canvas></div>
+
+        <div id="ringLegend" class="space-y-4">
+          <div class="p-6 bg-white/5 rounded-3xl flex justify-between items-center">
+            <div>
+              <p class="text-xs font-bold text-slate-300 uppercase">Loading…</p>
+              <p class="text-2xl font-black">--</p>
+            </div>
+            <div class="h-2 w-16 bg-slate-700 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-8 text-xs text-slate-500">
+        This ring graph is generated from your stored model output (Grouped_Spending).
+      </p>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="lg:col-span-5">
+    <div class="glass-panel h-[780px] flex flex-col">
+      <div class="p-8 border-b border-white/10 flex justify-between items-center">
+        <span class="text-xs font-black uppercase tracking-widest">Zoro AI Assistant</span>
+        <button id="refreshBtn" class="text-xs font-black uppercase tracking-widest text-indigo-300 hover:text-white transition">
+          Refresh DB Data
+        </button>
+      </div>
+
+      <div class="flex-1 p-8 text-slate-400 space-y-4">
+        <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
+          <p class="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Live Snapshot (From DB)</p>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><p class="text-slate-500 text-xs">Income</p><p id="incomeVal" class="font-black">--</p></div>
+            <div><p class="text-slate-500 text-xs">Savings Rate</p><p id="savingsRateVal" class="font-black">--</p></div>
+            <div><p class="text-slate-500 text-xs">Total Expenses</p><p id="totalExpVal" class="font-black">--</p></div>
+            <div><p class="text-slate-500 text-xs">Investment</p><p id="invVal" class="font-black">--</p></div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 text-xs text-slate-400">
+          <div class="font-black uppercase tracking-widest text-slate-500 mb-1">Debug</div>
+          <div id="debugBox" class="break-words">--</div>
+        </div>
+      </div>
+
+      <div class="p-8">
+        <input id="queryBox" type="text" placeholder="Type your financial query..."
+               class="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 text-sm focus:outline-none focus:border-indigo-500">
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ------------------------------
+  // Ring graph (Chart.js)
+  // ------------------------------
+  const ringCtx = document.getElementById('spendingRing').getContext('2d');
+
+  const ringChart = new Chart(ringCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['UPI Spend', 'Bills Spend', 'Debt Spend', 'Investment'],
+      datasets: [{
+        data: [0, 0, 0, 0],
+        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#334155'],
+        cutout: '78%',
+        borderRadius: 18,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      maintainAspectRatio: false,
+      animation: { duration: 900 }
+    }
+  });
+
+  function fmtINR(num) {
+    try {
+      return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(num);
+    } catch (e) {
+      return '₹' + Math.round(num).toLocaleString('en-IN');
+    }
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function buildLegend(grouped) {
+    const colors = {
+      "UPI Spend": "#6366f1",
+      "Bills Spend": "#10b981",
+      "Debt Spend": "#f59e0b",
+      "Investment": "#334155"
+    };
+
+    const legend = document.getElementById("ringLegend");
+    legend.innerHTML = "";
+
+    const entries = Object.entries(grouped || {});
+    if (!entries.length) {
+      legend.innerHTML = `
+        <div class="p-6 bg-white/5 rounded-3xl flex justify-between items-center">
+          <div>
+            <p class="text-xs font-bold text-slate-300 uppercase">No DB data</p>
+            <p class="text-2xl font-black">--</p>
+          </div>
+          <div class="h-2 w-16 bg-slate-700 rounded-full"></div>
+        </div>
+      `;
+      return;
+    }
+
+    entries.forEach(([k, v]) => {
+      const row = document.createElement("div");
+      row.className = "p-6 bg-white/5 rounded-3xl flex justify-between items-center";
+      row.innerHTML = `
+        <div>
+          <p class="text-xs font-bold uppercase" style="color:${colors[k] || '#cbd5e1'}">${k}</p>
+          <p class="text-2xl font-black">${fmtINR(v)}</p>
+        </div>
+        <div class="h-2 w-16 rounded-full" style="background:${colors[k] || '#475569'}"></div>
+      `;
+      legend.appendChild(row);
+    });
+  }
+
+  function healthLabel(score) {
+    if (score >= 85) return "Excellent";
+    if (score >= 70) return "Good";
+    if (score >= 50) return "Average";
+    return "Needs Improvement";
+  }
+
+  function healthInsight(score, savingsRate) {
+    const sr = (savingsRate || 0) * 100;
+    if (score >= 85) return `You're in a strong position. Keep savings above ${sr.toFixed(0)}% and maintain consistent investments.`;
+    if (score >= 70) return `Good momentum. A small boost in savings or on-time payments can push you into Excellent.`;
+    if (score >= 50) return `You're okay, but there's room to improve. Focus on lowering non-essential spend and increasing savings.`;
+    return `Your score needs attention. Prioritize debt repayment consistency and reduce high-frequency UPI spend.`;
+  }
+
+  // ------------------------------
+  // Safe JSON fetch helper
+  // ------------------------------
+  async function fetchJson(url, opts) {
+    const res = await fetch(url, opts);
+    const ct = res.headers.get("content-type") || "";
+    const text = await res.text();
+
+    if (!ct.includes("application/json")) {
+      throw new Error(`API returned non-JSON. Check server + URL (${url}). Got: ${text.slice(0, 80)}...`);
+    }
+
+    const data = JSON.parse(text);
+    if (!res.ok) throw new Error(data.error || "Request failed");
+    return data;
+  }
+
+  // ------------------------------
+  // Apply output to UI (expects DB output keys)
+  // ------------------------------
+  function applyOutput(out) {
+    const score = Number(out.Finance_Health_Score ?? 0);
+
+    setText("healthScore", isFinite(score) ? Math.round(score) : "--");
+    setText("healthLabel", healthLabel(score));
+
+    setText("debtScore", out.Predicted_Debt_Score ?? "--");
+    setText("daysScore", out.Predicted_Days_To_Clear_Debt != null ? Math.round(out.Predicted_Days_To_Clear_Debt) : "--");
+    setText("invScore", out.Predicted_Investment_Score ?? "--");
+
+    setText("incomeVal", out.Income != null ? fmtINR(out.Income) : "--");
+    setText("savingsRateVal", out.Savings_Rate != null ? `${Math.round(out.Savings_Rate * 100)}%` : "--");
+    setText("totalExpVal", out.Total_Expenses != null ? fmtINR(out.Total_Expenses) : "--");
+    setText("invVal", out.Investment != null ? fmtINR(out.Investment) : "--");
+
+    const grouped = out.Grouped_Spending || {};
+    const labels = Object.keys(grouped);
+    const values = Object.values(grouped);
+
+    if (labels.length) {
+      ringChart.data.labels = labels;
+      ringChart.data.datasets[0].data = values;
+      ringChart.update();
+    } else {
+      ringChart.data.labels = ['UPI Spend', 'Bills Spend', 'Debt Spend', 'Investment'];
+      ringChart.data.datasets[0].data = [0, 0, 0, 0];
+      ringChart.update();
+    }
+
+    buildLegend(grouped);
+    setText("insightText", `"AI Insight: ${healthInsight(score, out.Savings_Rate)}"`);
+  }
+
+  // ------------------------------
+  // DB-ONLY refresh flow:
+  // ✅ ONLY GET /api/latest (which must read finance_runs.db)
+  // ❌ NO DEFAULT_PAYLOAD fallback
+  // ------------------------------
+  async function refreshMetrics() {
+    try {
+      setText("debugBox", "Reading latest saved run from finance_runs.db via /api/latest ...");
+      setText("trainBadge", "DB: loading…");
+
+      const latest = await fetchJson("/api/latest", { cache: "no-store" });
+      const out = latest.output || latest;
+
+      if (!out || Object.keys(out).length === 0) {
+        throw new Error("Empty output in latest run.");
+      }
+
+      applyOutput(out);
+
+      const mm = out.Model_Metrics || {};
+      if (mm.trained_rows) setText("trainBadge", `DB: OK (trained_rows=${mm.trained_rows})`);
+      else setText("trainBadge", "DB: OK");
+
+      setText("debugBox", "✅ Showing data from finance_runs.db (latest row)");
+    } catch (err) {
+      setText("trainBadge", "DB: no data");
+      setText("debugBox", `❌ Could not load from DB: ${err.message}`);
+
+      setText("healthScore", "--");
+      setText("healthLabel", "--");
+      setText("debtScore", "--");
+      setText("daysScore", "--");
+      setText("invScore", "--");
+      setText("incomeVal", "--");
+      setText("savingsRateVal", "--");
+      setText("totalExpVal", "--");
+      setText("invVal", "--");
+
+      ringChart.data.labels = ['UPI Spend', 'Bills Spend', 'Debt Spend', 'Investment'];
+      ringChart.data.datasets[0].data = [0, 0, 0, 0];
+      ringChart.update();
+      buildLegend({});
+
+      setText("insightText", "No saved run found in finance_runs.db. Run your model once to store data, then refresh.");
+    }
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", refreshMetrics);
+
+  // Load DB data on page open
+  refreshMetrics();
+</script>
+
+</body>
+</html>

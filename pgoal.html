@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zoro AI | Goals Overview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-white p-10">
+
+  <h1 class="text-3xl font-bold mb-6 text-indigo-400">Goals Overview</h1>
+
+  <div id="goal-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <p class="text-slate-400">Loading goals...</p>
+  </div>
+
+  <script>
+    const supabaseUrl = "https://hjpsznxutydryxfwxmhw.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqcHN6bnh1dHlkcnl4Znd4bWh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc4MDYyMzcsImV4cCI6MjA4MzM4MjIzN30.IysFRy3E6RvD4rP_pJrkV52Ju6eAu2xo4FXEnJakIfU";
+
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function loadGoals() {
+      const { data, error } = await supabaseClient.from("goals").select("*");
+
+      const container = document.getElementById("goal-container");
+      container.innerHTML = "";
+
+      if (error) {
+        container.innerHTML = `<p class="text-red-400">Error loading goals.</p>`;
+        return;
+      }
+
+      if (!data.length) {
+        container.innerHTML = `<p class="text-slate-400">No goals found.</p>`;
+        return;
+      }
+
+      data.forEach(goal => {
+        container.insertAdjacentHTML("beforeend", `
+          <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+            <h2 class="text-lg font-bold">${goal.goal_name}</h2>
+            <p class="text-indigo-400 font-bold mt-2">₹${goal.goal_amount.toLocaleString()}</p>
+            <p class="text-slate-400 text-sm mt-2">Target: ${goal.goal_date || "Not set"}</p>
+          </div>
+        `);
+      });
+    }
+
+    loadGoals();
+  </script>
+
+</body>
+</html>

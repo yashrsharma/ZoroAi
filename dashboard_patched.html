@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoro AI | Premium Financial Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --indigo-primary: #6366f1;
+            --emerald-accent: #10b981;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 0% 0%, #0f172a 0%, #020617 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2.5rem;
+            transition: all 0.5s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(30, 41, 59, 0.6);
+            transform: translateY(-6px);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #22d3ee);
+            border-radius: 10px;
+        }
+    
+
+        /* ===== Chat UI (embedded) ===== */
+        .glow-orb {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(60px);
+            animation: float 20s infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(100px, 50px); }
+        }
+
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+
+<body class="p-8 lg:p-12">
+
+<header class="flex justify-between items-center mb-16">
+    <div>
+        <h1 class="text-4xl font-extrabold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+            ZORO AI
+        </h1>
+        <p class="text-slate-500 text-xs uppercase tracking-widest font-bold mt-1">
+            Financial Intelligence Unit
+        </p>
+    </div>
+
+    <!-- ✅ UPDATED NAVIGATION -->
+    <nav class="hidden md:flex gap-12 text-sm font-bold text-slate-400 uppercase tracking-widest">
+        <a href="dashboard.html" class="nav-link active hover:text-white">Dashboard</a>
+        <a href="goal1.html" class="nav-link hover:text-white">Goals</a>
+        <span class="nav-link cursor-pointer hover:text-white">Insights</span>
+    </nav>
+
+    <div class="h-12 w-12 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center font-bold text-indigo-400">
+        JS
+    </div>
+</header>
+
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+    <!-- LEFT PANEL -->
+    <div class="lg:col-span-7 space-y-10">
+
+        <!-- FINANCIAL HEALTH -->
+        <div class="glass-panel p-12 flex flex-col items-center text-center">
+            <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-12">
+                Financial Health Index
+            </h3>
+
+            <div class="relative p-2 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400">
+                <div class="bg-slate-950 w-48 h-48 rounded-full flex flex-col items-center justify-center">
+                    <span class="text-7xl font-black">82</span>
+                    <span class="text-xs text-emerald-400 font-black uppercase mt-2">Excellent</span>
+                </div>
+            </div>
+
+            <p class="mt-12 text-slate-400 italic text-sm max-w-sm">
+                "Your spending on non-essentials dropped by 12% this week.
+                You are on track to hit your savings goal early."
+            </p>
+        </div>
+
+        <!-- SPENDING ANALYSIS -->
+        <div class="glass-panel p-10">
+            <div class="flex justify-between mb-8">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500">
+                    Spending Analysis
+                </h3>
+                <span class="text-xs font-bold text-indigo-400">Monthly View</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div class="h-56">
+                    <canvas id="spendingChart"></canvas>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="p-6 bg-white/5 rounded-3xl flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-indigo-400 uppercase">Rent & Fixed</p>
+                            <p class="text-2xl font-black">40%</p>
+                        </div>
+                        <div class="h-2 w-16 bg-indigo-500 rounded-full"></div>
+                    </div>
+
+                    <div class="p-6 bg-white/5 rounded-3xl flex justify-between items-center">
+                        <div>
+                            <p class="text-xs font-bold text-emerald-400 uppercase">Lifestyle & Food</p>
+                            <p class="text-2xl font-black">30%</p>
+                        </div>
+                        <div class="h-2 w-16 bg-emerald-500 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- RIGHT PANEL -->
+    <div class="lg:col-span-5 relative">
+        <!-- Glow Effects (contained inside the panel) -->
+        <div class="glow-orb pointer-events-none" style="top:-120px; right:-120px;"></div>
+        <div class="glow-orb pointer-events-none" style="bottom:-120px; left:-120px; animation-delay:-5s;"></div>
+
+        <!-- Chatbot Panel -->
+        <div class="glass-panel h-[780px] flex flex-col border-indigo-500/20 overflow-hidden animate-in"
+             style="animation-delay:0.1s;">
+
+            <!-- Header -->
+            <div class="p-8 border-b border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
+                    <span class="font-black text-xs uppercase tracking-[0.2em] text-white">
+                        Zoro AI Assistant
+                    </span>
+                </div>
+                <button class="text-slate-500 hover:text-white transition" type="button" aria-label="Menu">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Chat -->
+            <div id="chatBox" class="flex-1 p-8 overflow-y-auto space-y-8 chat-scroll">
+                <!-- Default AI Msg -->
+                <div class="flex gap-4 max-w-[90%]">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-xs font-bold">
+                        AI
+                    </div>
+                    <div class="bg-indigo-600/10 border border-indigo-500/20 rounded-[2rem] rounded-tl-none p-6">
+                        <p class="text-sm leading-relaxed text-indigo-50">
+                            Hello! I've analyzed your recent transactions. Ready to optimize your goals today?
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="p-8">
+                <div class="relative group">
+                    <input id="userInput" type="text" placeholder="Type your financial query..."
+                           class="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 text-sm focus:outline-none focus:border-indigo-500 transition-all placeholder:text-slate-600">
+
+                    <button id="sendBtn" type="button"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-indigo-600 rounded-xl text-white hover:bg-indigo-500 transition shadow-lg shadow-indigo-600/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById("chatBox");
+        const userInput = document.getElementById("userInput");
+        const sendBtn = document.getElementById("sendBtn");
+
+        // ✅ PUT YOUR OPENROUTER KEY HERE (TESTING ONLY)
+        const OPENROUTER_API_KEY = "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";
+
+        // ✅ Model Selection
+        const MODEL = "xiaomi/mimo-v2-flash:free";
+
+        function appendUserMessage(message) {
+            const msg = document.createElement("div");
+            msg.className = "flex flex-row-reverse gap-4 ml-auto max-w-[90%]";
+            msg.innerHTML = `
+                <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-xs font-bold">
+                  U
+                </div>
+                <div class="bg-slate-800/80 border border-white/10 rounded-[2rem] rounded-tr-none p-6 text-sm text-slate-300">
+                  ${message}
+                </div>`;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendAIMessage(message) {
+            const msg = document.createElement("div");
+            msg.className = "flex gap-4 max-w-[90%]";
+            msg.innerHTML = `
+                <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-xs font-bold">
+                  AI
+                </div>
+                <div class="bg-indigo-600/10 border border-indigo-500/20 rounded-[2rem] rounded-tl-none p-6">
+                  <p class="text-sm leading-relaxed text-indigo-50">${message}</p>
+                </div>`;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function appendTypingIndicator() {
+            const typing = document.createElement("div");
+            typing.id = "typingIndicator";
+            typing.className = "flex gap-4 max-w-[90%]";
+            typing.innerHTML = `
+                <div class="flex-shrink-0 h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-xs font-bold">
+                    AI
+                </div>
+                <div class="bg-indigo-600/10 border border-indigo-500/20 rounded-[2rem] rounded-tl-none p-6">
+                    <p class="text-sm leading-relaxed text-indigo-50 italic opacity-70">Zoro is thinking...</p>
+                </div>
+            `;
+            chatBox.appendChild(typing);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typing = document.getElementById("typingIndicator");
+            if (typing) typing.remove();
+        }
+
+        async function getOpenRouterResponse(userMsg) {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "http://localhost", // change in production
+                    "X-Title": "Zoro AI"
+                },
+                body: JSON.stringify({
+                    model: MODEL,
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are Zoro AI, a premium financial assistant. Respond professionally, clearly, and concisely."
+                        },
+                        {
+                            role: "user",
+                            content: userMsg
+                        }
+                    ]
+                })
+            });
+
+            const data = await res.json();
+            return data.choices?.[0]?.message?.content || "No response received.";
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            appendUserMessage(message);
+            userInput.value = "";
+
+            appendTypingIndicator();
+
+            try {
+                const aiReply = await getOpenRouterResponse(message);
+                removeTypingIndicator();
+                appendAIMessage(aiReply);
+            } catch (err) {
+                removeTypingIndicator();
+                appendAIMessage("⚠️ Error connecting to OpenRouter. Check API key or network.");
+            }
+        }
+
+        sendBtn.addEventListener("click", sendMessage);
+        userInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</main>
+
+
+
+
+
+
+
+
+<script>
+    // Initialize the Chart
+    const ctx = document.getElementById('spendingChart').getContext('2d');
+    let ringChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Rent', 'Groceries', 'Transport', 'Entertainment'],
+            datasets: [{
+                data: [0, 0, 0, 0], // Initial values
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#3b82f6'],
+                borderWidth: 0,
+                cutout: '80%'
+            }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+
+    async function updateDashboard() {
+        try {
+            // 1. Fetch data from your Python ML API
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    income: 50000, 
+                    rent: 15000,
+                    groceries: 5000,
+                    transport: 2000,
+                    entertainment: 3000,
+                    investment: 10000,
+                    timely_loan_repayment: 1,
+                    goal_achievement: 1
+                })
+            });
+
+            const data = await response.json();
+
+            // 2. Update the Text Metrics using the IDs in your HTML
+            const healthEl = document.getElementById('healthScore');
+            const daysEl = document.getElementById('daysToDebt');
+            const investEl = document.getElementById('investmentScore');
+
+            if (healthEl) healthEl.innerText = Math.round(data.Finance_Health_Score);
+            if (daysEl) daysEl.innerText = Math.round(data.Predicted_Days_To_Clear_Debt);
+            if (investEl) investEl.innerText = Math.round(data.Predicted_Investment_Score);
+
+            // (Chat panel is embedded on the right, so we don't overwrite it with dashboard insight text.)
+// 3. Update the Chart
+            ringChart.data.datasets[0].data = [data.Rent, data.Groceries, data.Transport, data.Entertainment];
+            ringChart.update();
+
+        } catch (error) {
+            console.error("Failed to fetch model data:", error);
+        }
+    }
+
+    // Call on load
+    window.onload = updateDashboard;
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

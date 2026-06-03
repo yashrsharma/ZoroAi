@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoro AI | goal</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- ✅ Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 0% 0%, #0f172a 0%, #020617 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.38);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2.5rem;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(99,102,241,0.08), transparent 60%);
+      transform: rotate(30deg);
+      pointer-events: none;
+    }
+
+    .glass-panel:hover {
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      background: rgba(30, 41, 59, 0.55);
+      transform: translateY(-6px);
+      box-shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.55);
+    }
+
+    .goal-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: white;
+      padding: 1rem;
+      border-radius: 1.25rem;
+      width: 100%;
+      outline: none;
+      transition: 0.25s ease;
+    }
+
+    .goal-input:focus {
+      border-color: rgba(99, 102, 241, 0.9);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    }
+
+    .glow-orb {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      filter: blur(70px);
+      animation: float 20s infinite alternate;
+    }
+
+    @keyframes float {
+      from { transform: translate(0, 0); }
+      to { transform: translate(120px, 70px); }
+    }
+
+    .chat-scroll::-webkit-scrollbar { width: 5px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(99,102,241,1), rgba(34,211,238,0.75));
+      color: white;
+      font-weight: 800;
+      border-radius: 1.5rem;
+      padding: 1rem;
+      transition: 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+      box-shadow: 0px 18px 35px -15px rgba(99,102,241,0.55);
+    }
+  </style>
+</head>
+
+<body class="p-8 lg:p-12 relative">
+
+  <div class="glow-orb" style="top:-120px; right:-100px;"></div>
+  <div class="glow-orb" style="bottom:-120px; left:-100px; animation-delay:-4s;"></div>
+
+  <!-- Header -->
+
+
+
+
+
+  <header class="flex justify-between items-center mb-14">
+    <div>
+      <h1 class="text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+        ZORO AI
+      </h1>
+
+      <p class="text-slate-500 font-semibold tracking-wide text-xs uppercase mt-2">
+        goal Intelligence Unit
+        <nav class="hidden md:flex gap-12 text-sm font-bold text-slate-400 uppercase tracking-widest" style="padding-left: 550px;">
+  <a href="/dashboard" class="nav-link active hover:text-white">Dashboard</a>
+  <a href="/goals" class="nav-link hover:text-white">Goals</a>
+  <a href="/chats" class="nav-link cursor-pointer hover:text-white">AI Support</a>
+</nav>
+      </p>
+      
+    </div>
+    <div class="h-12 w-12 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center font-bold text-indigo-400 shadow-xl">
+      JS
+    </div>
+  </header>
+
+  <main class="grid grid-cols-1 lg:grid-cols-4 gap-7 items-start">
+
+    <!-- ✅ Active goal -->
+    <div class="glass-panel p-8 space-y-4 lg:col-span-1">
+      <h3 class="font-bold text-lg tracking-tight">Active goal</h3>
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Real-time synced goal from Supabase.
+      </p>
+
+      <div id="goal-list" class="space-y-4 max-h-[320px] overflow-y-auto chat-scroll pr-2 mt-4">
+        <p class="text-slate-400 text-sm">Loading goal...</p>
+      </div>
+    </div>
+
+    <!-- ✅ Graph Panel -->
+    <div class="glass-panel p-8 lg:col-span-2">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-bold text-lg">goal Growth Graph</h3>
+        <span class="text-xs font-bold uppercase text-indigo-400 tracking-widest">Live Chart</span>
+      </div>
+
+      <div class="h-[300px]">
+        <canvas id="goalGraph"></canvas>
+      </div>
+    </div>
+
+    <!-- ✅ Create Goal -->
+    <div class="glass-panel p-8 flex flex-col min-h-[500px] lg:col-span-1">
+      <h3 class="text-lg font-bold mb-5">Create New Goal</h3>
+
+      <div class="space-y-4 flex-1">
+        <input type="text" id="goal-name" placeholder="Goal Name" class="goal-input">
+        <input type="number" id="goal-amount" placeholder="Target (₹)" class="goal-input">
+        <input type="date" id="goal-date" class="goal-input text-slate-500">
+
+        <button onclick="addGoal()" class="btn-primary w-full mt-4">
+          Save Goal
+        </button>
+
+        <p class="text-xs text-slate-400 pt-2 leading-relaxed">
+          Your goal will be stored in Supabase and visible across devices.
+        </p>
+      </div>
+    </div>
+
+    <!-- ✅ Goal Focus -->
+    <div class="glass-panel p-8 text-center lg:col-span-2">
+      <h3 class="font-bold text-lg">Goal Focus</h3>
+      <div class="py-10">
+        <h2 class="text-5xl font-black tracking-tighter" id="detail-amount">₹0</h2>
+        <p class="text-[10px] text-slate-500 font-bold uppercase mt-2 tracking-[0.25em]">Total Target</p>
+      </div>
+    </div>
+
+    <!-- ✅ Stress Test -->
+    <div class="glass-panel p-8 text-center lg:col-span-2">
+      <h3 class="font-bold text-lg">AI Insight Panel</h3>
+      <p class="text-slate-400 mt-6 italic text-lg" id="ai-insight">"Risk analysis ready."</p>
+    </div>
+
+  </main>
+
+  <script>
+    /* ✅ SUPABASE CONFIG */
+    const supabaseUrl = "https://ywefrfygdjfaewbpmejp.supabase.co";
+    const supabaseKey = "sb_publishable_rVux9TUWDfGq6NqJ1XQ1Xg_Ps0bbM0n";
+
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let goalChart;
+
+    /* ✅ FETCH goal ON PAGE LOAD */
+    async function fetchgoal() {
+      const { data, error } = await supabaseClient
+        .from("goal")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const list = document.getElementById("goal-list");
+      list.innerHTML = "";
+
+      let totalTarget = 0;
+
+      if (error) {
+        list.innerHTML = `<p class="text-red-400 text-sm">Error fetching goal.</p>`;
+        console.log(error);
+        return;
+      }
+
+      if (!data.length) {
+        list.innerHTML = `<p class="text-slate-400 text-sm">No goal added yet.</p>`;
+        document.getElementById("detail-amount").innerText = `₹0`;
+        return;
+      }
+
+      // ✅ Chart Data
+      const labels = [];
+      const amounts = [];
+
+      data.reverse().forEach(goal => {
+        totalTarget += goal.goal_amount;
+
+        labels.push(goal.goal_name);
+        amounts.push(goal.goal_amount);
+
+        list.insertAdjacentHTML("afterbegin", `
+          <div class="p-5 bg-white/5 border border-white/5 rounded-2xl">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-sm font-semibold">${goal.goal_name}</span>
+              <span class="text-sm font-bold text-indigo-400">₹${goal.goal_amount.toLocaleString()}</span>
+            </div>
+            <p class="text-xs text-slate-400">Target Date: ${goal.goal_date || "Not set"}</p>
+          </div>
+        `);
+      });
+
+      document.getElementById("detail-amount").innerText = `₹${totalTarget.toLocaleString()}`;
+
+      // ✅ Draw Graph
+      renderGoalChart(labels, amounts);
+    }
+
+    function renderGoalChart(labels, amounts) {
+      const ctx = document.getElementById("goalGraph").getContext("2d");
+
+      if (goalChart) goalChart.destroy();
+
+      goalChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            data: amounts,
+            borderColor: "#6366f1",
+            borderWidth: 4,
+            tension: 0.4,
+            fill: true,
+            backgroundColor: "rgba(99, 102, 241, 0.15)",
+            pointRadius: 5,
+            pointBackgroundColor: "#22d3ee",
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: "#94a3b8" }, grid: { display: false }},
+            y: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,0.05)" }}
+          }
+        }
+      });
+    }
+
+    window.onload = fetchgoal;
+
+    /* ✅ ADD GOAL TO SUPABASE */
+    async function addGoal() {
+      const name = document.getElementById("goal-name").value.trim();
+      const amount = parseInt(document.getElementById("goal-amount").value);
+      const date = document.getElementById("goal-date").value || null;
+
+      if (!name || !amount) {
+        alert("Please enter goal name and amount!");
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("goal")
+        .insert([{ goal_name: name, goal_amount: amount, goal_date: date }]);
+
+      if (error) {
+        alert("Error saving goal!");
+        console.log(error);
+        return;
+      }
+
+      alert("Goal Saved Successfully ✅");
+
+      // ✅ Redirect to pgoal page after save
+      window.location.href = "pgoal.html";
+    }
+  </script>
+
+</body>
+</html>
